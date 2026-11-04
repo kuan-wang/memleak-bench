@@ -1,0 +1,216 @@
+{
+  "name": "MemLeak",
+  "alternateName": [
+    "MemLeak Benchmark",
+    "memleak-benchmark"
+  ],
+  "description": "MemLeak is a benchmark for diagnosing information leaks in multimodal agent memory. It asks whether a deleted user fact can still be reconstructed after deletion, from retained images or retained text. The release contains: synthetic user profiles (facts with deletion targets and visual-grounding labels); synthetic images for 38 profiles; the per-probe outputs of every reported experiment, with each LLM judge's verdict; two human annotators' labels on a 100-item validation sample; entailment-classifier labels; references (hashes and search queries) for the Unsplash photos of the real-photo condition, which are not redistributed; the genuine-collections experiment, released by reference (linked Wikimedia Commons images under pseudonymous IDs, with de-linked outcomes); and the evaluation code. Companion to the paper 'MemLeak: Diagnosing Information Leaks in Multimodal Agent Memory' (NeurIPS 2026) (Kuan Wang and Chao Zhang, Georgia Institute of Technology).",
+  "version": "1.1.0",
+  "datePublished": "2026-05-07",
+  "dateModified": "2026-11-03",
+  "inLanguage": "en",
+  "isLiveDataset": false,
+  "keywords": [
+    "privacy",
+    "agent memory",
+    "machine unlearning",
+    "forgetting",
+    "multimodal",
+    "vision-language models",
+    "benchmark",
+    "LLM-as-a-judge"
+  ],
+  "license": [
+    "https://spdx.org/licenses/MIT.html"
+  ],
+  "creator": [
+    {
+      "@type": "sc:Person",
+      "name": "Kuan Wang",
+      "email": "kuanwang@gatech.edu",
+      "affiliation": {
+        "@type": "sc:Organization",
+        "name": "Georgia Institute of Technology"
+      }
+    },
+    {
+      "@type": "sc:Person",
+      "name": "Chao Zhang",
+      "email": "chaozhang@gatech.edu",
+      "affiliation": {
+        "@type": "sc:Organization",
+        "name": "Georgia Institute of Technology"
+      }
+    }
+  ],
+  "sameAs": [
+    "https://arxiv.org/abs/2606.29788"
+  ],
+  "citeAs": "@inproceedings{wang2026memleak,\n  title     = {{MemLeak}: Diagnosing Information Leaks in Multimodal Agent Memory},\n  author    = {Wang, Kuan and Zhang, Chao},\n  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},\n  year      = {2026},\n  eprint    = {2606.29788},\n  archivePrefix = {arXiv}\n}",
+  "rai:hasSyntheticData": true,
+  "rai:dataCollection": "The synthetic profiles were written by GPT-5.4 (as stated in the paper). The profile-generation script's default model is gpt-4o-mini, and the model used for each profile was not logged. The five hand-written pilot profiles served as few-shot examples (temperature 0.8, random seed 42). Each profile has 20 facts across five categories, with a deletion flag and a visual-grounding label (explicit / implicit / absent). For the 38 multimodal profiles, GPT-5.4 wrote one image prompt per fact (generation/image_prompts.json), and Google Gemini 3.1 Flash Image (gemini-3.1-flash-image-preview) rendered the 536 images in one batch job (April 2026). The 64 pilot images (20 April 2026) have no generator logged in their metadata; the commit that added them records Qwen-Image. 46 further images in 25 profiles come from an early pilot round (21 April 2026) that the reported evaluations do not use; their generator was not recorded. Real-photo condition: a query built from each fact's text was sent to Unsplash's web search in April 2026, and the top result was downloaded (523 photos, 38 profiles). Photo IDs and photographers were not recorded. At least 70% turned out to be Unsplash+ previews, so the photos are no longer redistributed; their hashes, watermark labels and search queries are in metadata/real_photos_unsplash.csv. Genuine-collections experiment (July 2026): 18 Wikimedia Commons uploader streams (530 images) were sourced, and a GPT-4o gate plus manual exclusions kept 9 personal streams. GPT-4o extracted facts from the images, and Claude Sonnet 4.5 was probed with the remaining photos. The images are linked from real_collections/images.csv, not rehosted. All experiment outputs were produced by querying commercial model APIs; models are listed per experiment in metadata/multimodal_judgments.csv and in the dataset card.",
+  "rai:dataCollectionType": [
+    "Synthetic data generation (LLM and text-to-image models)",
+    "Web search and download (Unsplash photos; not redistributed)",
+    "Public web data linked by reference (Wikimedia Commons streams)",
+    "Model outputs (VLM/LLM probing and LLM judging)",
+    "Human annotation (100-item validation sample)"
+  ],
+  "rai:dataCollectionTimeframe": [
+    "2026-04-18/2026-05-07 (profiles, images and v1.0 results)",
+    "2026-07-26/2026-07-28 (supplementary analyses in results/supplementary/ and the genuine-collections experiment)"
+  ],
+  "rai:dataCollectionMissingData": "30 of the 143 generated profiles do not have exactly 20 facts, so they are not part of the 113-profile benchmark; they are released for transparency. Of 300 Unsplash queries, 18 returned no result. 2 of the 536 Gemini images needed a softened-prompt retry after a safety-filter rejection. Some judge calls failed, so the vote_count denominator is 2 instead of 3 (e.g. '0/2'). Per-judge verdicts were not stored for the blind and retained-text baselines (only ensemble verdicts). 4 of the 270 genuine-collection images have since been deleted from Wikimedia Commons and are omitted.",
+  "rai:dataPreprocessingProtocol": "Profiles were checked for schema validity. Local absolute paths were removed from the pilot profile JSONs before release. For the multimodal conditions, images tagged to the deleted fact were withheld and only images tagged to retained facts were shown ('retained' mode). The images in images/<profile> are byte-identical copies of images/synthetic/<profile>, kept for the old paths referenced inside profile JSONs. Genuine-collection outcomes were stripped of collection and image identifiers and shuffled before release.",
+  "rai:dataAnnotationProtocol": "Leakage labels come from an LLM-judge ensemble. GPT-4.1, Claude Sonnet and Gemini 2.5 Flash each judge whether a response reveals the deleted fact (leaked / not_leaked / ambiguous), and a probe counts as leaked when at least 2 of 3 judges say so. The Claude judge was claude-sonnet-4-20250514 in the v1.0 experiments and claude-sonnet-4-5 in the later reruns (Claude Sonnet 4 was retired on 2026-06-15). In the legacy text-only system results, each probe was judged by a single judge (GPT-4o-mini or Claude Sonnet 4). Human validation: two annotators, both authors of the paper, labeled the same stratified sample of 100 multimodal verdicts (25 same-fact, 60 retained, 15 negative). The annotation interface displayed the ensemble verdict and vote count to the annotators, so the human labels are not blind to the model labels. Two GPT-5.5 entailment classifiers label how each deleted fact relates to the retained fact texts (prompts in results/supplementary/entailment_classifier_prompts.md). A blinded human validation of the strict classifier is not completed; its blank 50-probe annotation sheets and scoring script are released in results/supplementary/entailment_validation/.",
+  "rai:dataAnnotationPlatform": "A local Flask web interface (code/scripts/human_validation_ui.py) for human labels, and model APIs (OpenAI, Anthropic, Google) for machine labels.",
+  "rai:dataAnnotationAnalysis": "Inter-annotator agreement on the 100-item sample is 94% (Cohen's kappa = 0.88). Ensemble-human agreement is 92% (kappa = 0.84), and it is lower for same-fact probes (kappa = 0.47). Split 1/3 votes agree with humans in only 37.5% of cases. Per-judge leak rates and leave-one-judge-out aggregations are in results/supplementary/judge_robustness_analysis.json.",
+  "rai:annotationsPerItem": "3 LLM-judge verdicts per probe in the multimodal and baseline conditions. 1 LLM-judge verdict per probe in the legacy text-only system results. 2 human labels per item in the 100-item validation sample. 1 classifier label per probe for each entailment classifier.",
+  "rai:machineAnnotationTools": [
+    "gpt-4.1 (judge)",
+    "claude-sonnet-4-20250514 (judge and prober, v1.0 experiments)",
+    "claude-sonnet-4-5 (judge, later reruns)",
+    "claude-sonnet-4-6 (prober for 280 probes and judge, retained-text baseline)",
+    "gemini-2.5-flash (judge)",
+    "gpt-4o-mini (judge, part of the legacy text-only results)",
+    "gpt-5.5 (entailment classifiers)",
+    "gpt-4o (genuine-collection gate and fact extraction)",
+    "claude-sonnet-4-5 (prober, genuine collections, utility cost and text-channel mitigation)"
+  ],
+  "rai:dataUseCases": "Validated use: measuring whether deleting a fact from a multimodal agent memory removes the ability to reconstruct it, by probing with retained images, retained text, or both, with the controls provided (blind prompts, wrong-profile negative controls). The construct is 'reconstructability of a deleted fact by a given prober model, as judged by an LLM ensemble'. Its validity rests on the human-validation sample and on the near-zero blind and negative-control rates. Not validated for: estimating real-user leakage rates (the profiles are synthetic), ranking memory systems by text-only leakage (the legacy text-only system results do not measure deletion and are not reported in the paper; see results/README.md), or grading the severity of a leak.",
+  "rai:dataBiases": "Profiles and images reflect the generating models' priors. Personas cluster in internationally known cities and destinations and in professional, often affluent lifestyles. Gender, age, ethnicity and socio-economic attributes were neither controlled nor measured. Each profile has 20 facts, 4 per category. Facts are clustered within profiles (300 multimodal probes come from 38 profiles), so per-probe confidence intervals understate uncertainty. The real photos were stock photography chosen by a search engine, and most carry an 'Unsplash+' preview watermark, so they are not representative of personal photo collections. The genuine collections are few (9) and skew toward hobbyist photographers. The LLM judges share training-data biases, and one judge family (Claude) is also the prober in several conditions.",
+  "rai:dataLimitations": "(1) All profiles are synthetic. Real users' photos and memories may leak more or less. (2) Visual-grounding labels come from the generation pipeline and were not independently verified. (3) The legacy text-only system results (results/*_generated.json) and the pilot deletion-policy ablations (results/ablations.json) do not measure deletion. The generated profiles have empty interaction streams, so no fact was injected and no forget instruction was issued. A runner bug also reset the Oracle-derived stores, and a zero recall threshold skipped the acquisition check. They are kept for auditability, are not reported in the paper, and were not rerun. (4) Claude Sonnet 4, the original prober and judge, was retired on 2026-06-15, so experiments that used it cannot be re-run exactly. Later analyses use Claude Sonnet 4.5 or Claude Sonnet 5, which are disclosed per experiment. (5) Baseline image responses were truncated to 500 characters before judging, but semantic-deletion responses were judged in full. (6) The human-validation annotators saw the ensemble verdict. (7) At least 70% of the real photos are 'Unsplash+' preview images, so they are not redistributed (references only, in metadata/real_photos_unsplash.csv). Re-sourcing them from the queries returns current search results, not necessarily the same photos. (8) Leak rates are specific to the deletion policy and the model, and are not universal lower bounds. (9) Genuine-collection facts were extracted by a model and are not verified biographical ground truth; one stream turned out to be third-party uploads and another contains AI-generated images (results with and without them are in real_collections/summary.json). Not recommended: using the benchmark to make claims about specific real people, or as training data for systems that infer personal attributes from photos.",
+  "rai:dataSocialImpact": "Positive: the benchmark shows that deleting a stored fact does not stop a vision-language model from reconstructing it from other retained images or text, which informs privacy engineering, right-to-be-forgotten compliance and auditing of agent memory. Negative / misuse: the same probes demonstrate attribute inference from photos and could guide profiling of real people. Mitigations: the benchmark profiles are fictional. For the genuine collections, images are linked rather than rehosted (so deletions on Commons take effect), collection IDs are pseudonymous, the model-inferred facts and responses are withheld, and the outcomes are released without collection or image identifiers. Takedown requests are honored. The dataset card asks users not to apply the probes to real individuals.",
+  "rai:personalSensitiveInformation": "The synthetic profiles contain fictional personal information: names, home locations (geography), professions, family relationships and family members' names, possessions (socio-economic status), and preferences (culture, lifestyle). Gender is implied by pronouns. No health, political or religious attributes are deliberately included. Any resemblance to real people is coincidental. The genuine-collection images are public, freely licensed Wikimedia Commons photos of real, identifiable people's lives; they are linked, not rehosted, and attributed as their licenses require. The facts a model inferred about these uploaders, and the VLM responses about them, are withheld. Outcomes are released only in de-linked form. The Unsplash photos (which may show stock-photo models) are no longer redistributed.",
+  "rai:dataReleaseMaintenancePlan": "Maintained by the authors (contact: kuanwang@gatech.edu). Released versions are tagged in the repository (v1.0 = initial release, 2026-05-07; v1.1 = this version). Files of v1.0 are not modified in place; v1.1 removes the Unsplash photos (licensing) and keeps their references. Corrections are added as new files and documented in the dataset card changelog. Takedown requests for any image or image reference are honored, and each removal is recorded in the card's changelog.",
+  "prov:wasDerivedFrom": [
+    {
+      "@id": "https://unsplash.com",
+      "name": "Unsplash photo search results (real-photo condition; not redistributed, referenced in metadata/real_photos_unsplash.csv)"
+    },
+    {
+      "@id": "https://commons.wikimedia.org",
+      "name": "Wikimedia Commons uploader streams (genuine-collections experiment; linked in real_collections/images.csv)"
+    },
+    {
+      "@id": "{REPO_URL}/tree/main/pilots",
+      "name": "Five hand-written pilot profiles, used as few-shot seeds for profile generation"
+    },
+    {
+      "@id": "{REPO_URL}/blob/main/generation/image_prompts.json",
+      "name": "LLM-written image prompts used as seeds for image generation"
+    }
+  ],
+  "prov:wasGeneratedBy": [
+    {
+      "@type": "prov:Activity",
+      "@id": "activity/profile-generation",
+      "name": "Synthetic profile generation",
+      "description": "An LLM wrote personas with 20 facts each, using the pilot profiles as few-shot examples. Profiles without exactly 20 facts were excluded from the benchmark.",
+      "prov:startedAtTime": "2026-04-18",
+      "prov:wasAssociatedWith": [
+        {
+          "@type": "prov:SoftwareAgent",
+          "name": "OpenAI GPT-5.4 (as stated in the paper; script default gpt-4o-mini; per-profile model not logged)"
+        }
+      ]
+    },
+    {
+      "@type": "prov:Activity",
+      "@id": "activity/image-generation",
+      "name": "Synthetic image generation",
+      "description": "GPT-5.4 wrote one image prompt per fact, encoding its visual-grounding level. Gemini 3.1 Flash Image rendered 536 images in one batch. The pilot images were rendered with Qwen-Image.",
+      "prov:startedAtTime": "2026-04-20",
+      "prov:wasAssociatedWith": [
+        {
+          "@type": "prov:SoftwareAgent",
+          "name": "OpenAI gpt-5.4"
+        },
+        {
+          "@type": "prov:SoftwareAgent",
+          "name": "Google gemini-3.1-flash-image-preview"
+        },
+        {
+          "@type": "prov:SoftwareAgent",
+          "name": "Qwen-Image (per the commit that added the pilot images; not logged per image)"
+        }
+      ]
+    },
+    {
+      "@type": "prov:Activity",
+      "@id": "activity/real-photo-collection",
+      "name": "Real photo retrieval",
+      "description": "A query built from each fact's text was sent to Unsplash web search, and the top result was downloaded (code/scripts/source_real_images.py). The photos are not redistributed in v1.1; their references are in metadata/real_photos_unsplash.csv.",
+      "prov:startedAtTime": "2026-04",
+      "prov:wasAssociatedWith": [
+        {
+          "@type": "prov:SoftwareAgent",
+          "name": "Unsplash search"
+        }
+      ]
+    },
+    {
+      "@type": "prov:Activity",
+      "@id": "activity/genuine-collections",
+      "name": "Genuine personal collections (by reference)",
+      "description": "18 Wikimedia Commons uploader streams were sourced and gated to 9 personal streams (GPT-4o gate plus manual exclusions). GPT-4o extracted one-image-grounded facts. Claude Sonnet 4.5 was probed with the remaining photos, with blind controls, and judged by the 3-model ensemble. Released by reference with pseudonymous IDs and de-linked outcomes (code/scripts/run_real_collections.py).",
+      "prov:startedAtTime": "2026-07",
+      "prov:wasAssociatedWith": [
+        {
+          "@type": "prov:SoftwareAgent",
+          "name": "OpenAI gpt-4o"
+        },
+        {
+          "@type": "prov:SoftwareAgent",
+          "name": "Anthropic claude-sonnet-4-5"
+        }
+      ]
+    },
+    {
+      "@type": "prov:Activity",
+      "@id": "activity/probing-and-judging",
+      "name": "Probing and LLM-judge annotation",
+      "description": "Prober models answered inference probes given retained images and/or texts. A 3-judge ensemble labeled each response. Model IDs are recorded per row in metadata/multimodal_judgments.csv.",
+      "prov:wasAssociatedWith": [
+        {
+          "@type": "prov:SoftwareAgent",
+          "name": "Anthropic claude-sonnet-4-20250514 / claude-sonnet-4-5 / claude-sonnet-4-6 / claude-sonnet-5"
+        },
+        {
+          "@type": "prov:SoftwareAgent",
+          "name": "OpenAI gpt-4o / gpt-4.1"
+        },
+        {
+          "@type": "prov:SoftwareAgent",
+          "name": "Google gemini-2.5-flash"
+        }
+      ]
+    },
+    {
+      "@type": "prov:Activity",
+      "@id": "activity/human-validation",
+      "name": "Human validation",
+      "description": "Two annotators, both authors of the paper, independently labeled 100 stratified judge decisions. The interface displayed the ensemble verdict.",
+      "prov:startedAtTime": "2026-04-27",
+      "prov:wasAssociatedWith": [
+        {
+          "@type": "prov:Person",
+          "name": "The authors (two annotators)"
+        }
+      ]
+    },
+    {
+      "@type": "prov:Activity",
+      "@id": "activity/entailment-classification",
+      "name": "Entailment classification",
+      "description": "GPT-5.5 classified the relation between each deleted fact and the retained fact texts, using two prompts.",
+      "prov:startedAtTime": "2026-05-06",
+      "prov:wasAssociatedWith": [
+        {
+          "@type": "prov:SoftwareAgent",
+          "name": "OpenAI gpt-5.5"
+        }
+      ]
+    }
+  ]
+}

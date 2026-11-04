@@ -1,0 +1,27 @@
+# Secrets: copy .env.example to .env and keep it local
+.env
+.env.*
+!.env.example
+
+# Dataset files and run outputs (built by setup_data_layout.sh)
+data/
+
+# Virtual environments
+.venv*/
+.venv*
+venv/
+
+# Python build and cache files
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# OS and editor files
+.DS_Store
+.idea/
+.vscode/

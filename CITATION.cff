@@ -1,0 +1,34 @@
+cff-version: 1.2.0
+message: "If you use MemLeak, please cite the paper as below."
+title: "MemLeak: Diagnosing Information Leaks in Multimodal Agent Memory"
+type: software
+authors:
+  - family-names: Wang
+    given-names: Kuan
+    affiliation: Georgia Institute of Technology
+  - family-names: Zhang
+    given-names: Chao
+    affiliation: Georgia Institute of Technology
+license: MIT
+url: "https://huggingface.co/datasets/memleak-bench/memleak-benchmark"
+keywords:
+  - privacy
+  - agent memory
+  - multimodal
+  - forgetting
+  - benchmark
+preferred-citation:
+  type: conference-paper
+  title: "MemLeak: Diagnosing Information Leaks in Multimodal Agent Memory"
+  authors:
+    - family-names: Wang
+      given-names: Kuan
+    - family-names: Zhang
+      given-names: Chao
+  collection-title: "Advances in Neural Information Processing Systems (NeurIPS)"
+  year: 2026
+  identifiers:
+    - type: other
+      value: "arXiv:2606.29788"
+      description: arXiv preprint
+  url: "https://arxiv.org/abs/2606.29788"
